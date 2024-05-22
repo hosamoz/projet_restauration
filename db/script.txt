@@ -1,0 +1,136 @@
+DROP SCHEMA projet CASCADE;
+
+CREATE SCHEMA IF NOT EXISTS projet;
+
+CREATE TABLE projet.clients (name VARCHAR(255), pwd VARCHAR(255));
+
+-- INSERT INTO
+--     projet.clients (name, pwd)
+-- VALUES
+--     (
+--         'Hosam',
+--         'eaf71757471c8f1570c6b2ac7b130099a05a59b98456decf7e3368136c1cdc85'
+--     );
+
+--CREATE TABLE HORAIRE_RESTO
+-- Code TraceAvis
+CREATE TABLE projet.Client (
+    IdClient VARCHAR(255) PRIMARY KEY,
+    MotDePasse VARCHAR(255) NOT NULL,
+    Nom VARCHAR(255) NOT NULL,
+    Prenom VARCHAR(255) NOT NULL,
+    Rue VARCHAR(255),
+    Numero VARCHAR(10), -- could be 9A,9B,..
+    Ville VARCHAR(255),
+    CodePostal VARCHAR(20),
+    Pays VARCHAR(50),
+    Type VARCHAR(20) CHECK (Type IN ('Client', 'Restaurateur', 'Moderateur')) DEFAULT 'Client' NOT NULL,
+    IdRestaurateur VARCHAR(255) UNIQUE, -- This will be populated only if Type is 'Restaurateur'
+    IdModerateur VARCHAR(255) UNIQUE, -- This will be populated only if Type is 'Moderateur'
+    CONSTRAINT unique_client UNIQUE (Nom, Prenom,Rue,Numero,Ville,CodePostal,Pays) -- Since we have no email adress to identify
+);
+
+CREATE TABLE projet.Allergene (
+    IdAllergene SERIAL PRIMARY KEY,
+    Nom VARCHAR(255) NOT NULL UNIQUE
+);
+
+CREATE TABLE projet.Plat (
+    IdPlat SERIAL PRIMARY KEY,
+    Nom VARCHAR(255) NOT NULL,
+    Prix DECIMAL(10, 2) CHECK (Prix >= 0),
+    CONSTRAINT unique_nom_prix UNIQUE (Nom, Prix)
+);
+
+CREATE TABLE projet.PlatAllergene (
+    IdPlat SERIAL,
+    IdAllergene SERIAL,
+    PRIMARY KEY (IdPlat, IdAllergene),
+    CONSTRAINT fk_PlatAllergene_Plat FOREIGN KEY (IdPlat) REFERENCES projet.Plat(IdPlat),
+    CONSTRAINT fk_PlatAllergene_Allergene FOREIGN KEY (IdAllergene) REFERENCES projet.Allergene(IdAllergene)
+);
+
+CREATE TABLE projet.Restaurant (
+    IdRestaurant SERIAL PRIMARY KEY,
+    IdRestaurateur VARCHAR(255),
+    Nom VARCHAR(255) NOT NULL UNIQUE,
+    Type VARCHAR(50),
+    GammePrix VARCHAR(20) CHECK (
+        GammePrix IN ('bas', 'moyen', 'haut')
+    ) NOT NULL,
+    Note DECIMAL(3, 2) CHECK (
+        Note >= 0
+        AND Note <= 5
+    ),
+    Heures VARCHAR(255),
+    Livraison BOOLEAN,
+    Rue VARCHAR(255),
+    Numero VARCHAR(10),
+    Ville VARCHAR(255),
+    CodePostal VARCHAR(20),
+    Pays VARCHAR(50)
+);
+
+CREATE TABLE projet.Menu (
+    IdRestaurant INT,
+    IdPlat INT,
+    PRIMARY KEY (IdRestaurant, IdPlat),
+    CONSTRAINT fk_Menu_Restaurant FOREIGN KEY (IdRestaurant) REFERENCES projet.Restaurant(IdRestaurant),
+    CONSTRAINT fk_Menu_Plat FOREIGN KEY (IdPlat) REFERENCES projet.Plat(IdPlat)
+);
+
+CREATE TABLE projet.Note (
+    IdRestaurant SERIAL,
+    IdClient VARCHAR(255),
+    Commentaire TEXT,
+    ValeurNote DECIMAL(3, 2) CHECK (
+        ValeurNote >= 0
+        AND ValeurNote <= 5
+    ),
+    AvisRecommendation VARCHAR(20) CHECK (
+        AvisRecommendation IN (
+            'recommandé',
+            'déconseillé',
+            'à éviter d''urgence'
+        )
+    ) NOT NULL,
+    TypeVisite VARCHAR(20) CHECK (TypeVisite IN ('Physique', 'Livraison')) NOT NULL,
+    AvisPhysique INT CHECK (
+        AvisPhysique >= 0
+        AND AvisPhysique <= 5
+    ),
+    AvisLivraison INT CHECK (
+        AvisLivraison >= 0
+        AND AvisLivraison <= 5
+    ),
+    Date DATE,
+    HeureDebut TIME,
+    HeureFin TIME,
+    PrixTotal DECIMAL(10, 2) CHECK (PrixTotal >= 0),
+    Active BOOLEAN DEFAULT TRUE,
+    -- If moderateur deletes
+    PRIMARY KEY (IdRestaurant, IdClient),
+    CONSTRAINT fk_Note_Restaurant FOREIGN KEY (IdRestaurant) REFERENCES projet.Restaurant(IdRestaurant),
+    CONSTRAINT fk_Note_Client FOREIGN KEY (IdClient) REFERENCES projet.Client(IdClient),
+    CHECK (HeureDebut < HeureFin)
+);
+
+CREATE TABLE projet.NotePlat (
+    IdRestaurant INT,
+    IdClient VARCHAR(255),
+    IdPlat INT,
+    PRIMARY KEY (IdRestaurant, IdClient, IdPlat),
+    CONSTRAINT fk_NotePlat_Note FOREIGN KEY (IdRestaurant, IdClient) REFERENCES projet.Note(IdRestaurant, IdClient),
+    CONSTRAINT fk_NotePlat_Plat FOREIGN KEY (IdPlat) REFERENCES projet.Plat(IdPlat)
+);
+
+CREATE TABLE projet.TraceAvis (
+    IdRestaurant SERIAL,
+    IdClient VARCHAR(255),
+    IdModerateur VARCHAR(255),
+    Raison VARCHAR(255),
+    Date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (IdRestaurant, IdClient),
+    CONSTRAINT fk_TraceAvis_Note FOREIGN KEY (IdRestaurant, IdClient) REFERENCES projet.Note(IdRestaurant, IdClient),
+    CONSTRAINT fk_TraceAvis_Moderateur FOREIGN KEY (IdModerateur) REFERENCES projet.Client(IdModerateur)
+);

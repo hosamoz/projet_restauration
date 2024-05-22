@@ -1,0 +1,13 @@
+{
+    "name": "frontend_projet_partie2",
+    "version": "1.0.0",
+    "description": "Simple frontend pour la partie 2 BD",
+    "main": "index.js",
+    "scripts": {
+      "dev": "nodemon index.js"
+    },
+    "devDependencies": {
+      "nodemon": "^2.0.15"
+    }
+  }
+  
