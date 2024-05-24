@@ -16,7 +16,7 @@ async function initValidCommentsTSV(pool) {
 }
 async function insertNote(pool, data) {
     if (data.length <= 1) {
-        console.error("Invalid row on TSV file", data);
+        console.error("Error: Invalid row on TSV file", data);
         return
     }
     let idRestaurant = await getIdRestaurantByName(pool, data[4]?.trim());
@@ -47,7 +47,7 @@ async function insertNote(pool, data) {
             TypeVisite,
             Active
         ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) 
-        ON CONFLICT ON CONSTRAINT note_pkey DO NOTHING `,
+        ON CONFLICT ON CONSTRAINT note_pkey DO NOTHING `, //TODO update if date > actual date
         values: [
             data[0],   //Commentaire
             parseFloat(data[1]),  //ValeurNote
@@ -65,8 +65,8 @@ async function insertNote(pool, data) {
     try {
         await pool.query(queryNote);
 
-        for (const platName of plats) {
-            const idPlat = await getIdPlatByName(pool, platName.trim());
+        for (let platName of plats) {
+            let idPlat = await getIdPlatByName(pool, platName.trim());
             if (idPlat) {
                 await insertNotePlat(pool, idRestaurant, idClient, idPlat);
             } else {
@@ -81,11 +81,12 @@ async function insertNote(pool, data) {
 }
 //TODO in the future : if conflict on NotePlat -> note already existing then update the Note record
 async function insertNotePlat(pool, idRestaurant, idClient, idPlat) {
-    const query = {
+    let query = {
         text: `INSERT INTO projet.NotePlat (IdRestaurant,IdClient, IdPlat) VALUES ($1, $2, $3) 
                 ON CONFLICT ON CONSTRAINT noteplat_pkey
                 DO NOTHING
-               `, // 1 avis/client plat
+               `, // 1 avis/client plat 
+        //TODO - update with date -> if > actual date
         values: [idRestaurant, idClient, idPlat]
     };
 

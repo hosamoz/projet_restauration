@@ -27,15 +27,15 @@ async function initRestosModifieXML(pool) {
             let resultQuery = await pool.query(restaurantQuery)
             let menuItems = restaurant.menu[0].dish;
 
-            for (const menuItem of menuItems) {
-                const { allergens, name, price } = menuItem;
-                const idPlat = await insertPlat(pool, name[0], parseFloat(price[0].replace('€', '')));
+            for (let menuItem of menuItems) {
+                let { allergens, name, price } = menuItem;
+                let idPlat = await insertPlat(pool, name[0], parseFloat(price[0].replace('€', '')));
                 if (idPlat == null) continue; // record already exists 
 
                 await insertMenuPlat(pool, resultQuery.rows[0].idrestaurant, idPlat);
 
                 if (Array.isArray(allergens[0].allergen)) {
-                    for (const allergen of allergens[0].allergen) {
+                    for (let allergen of allergens[0].allergen) {
                         await insertPlatAllergene(pool, idPlat, allergen);
                     }
                 } else {

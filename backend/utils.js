@@ -5,23 +5,23 @@ const fs = require('fs');
 
 async function getIdPlatByName(pool, name) {
     if (!name) return null;
-    const query = {
+    let query = {
         text: `SELECT IdPlat FROM projet.Plat WHERE Nom =$1`,
         values: [name]
     };
-    const res = await pool.query(query);
+    let res = await pool.query(query);
     return res.rows.length > 0 ? res.rows[0].idplat : null;
 }
 async function getIdRestaurantByName(pool, name) {
     if (!name) return null;
     try {
-        const queryRestaurant = {
+        let queryRestaurant = {
             text: `SELECT IdRestaurant FROM projet.Restaurant WHERE Nom = $1`,
             values: [name.toLowerCase()]
         };
-        const res = await pool.query(queryRestaurant);
+        let res = await pool.query(queryRestaurant);
         if (res.rows.length === 0) {
-            console.error("Restaurant not found:", name.toLowerCase());
+            console.error("Error: Restaurant not found:", name.toLowerCase());
             return null;
         }
         return res.rows[0].idrestaurant;
@@ -37,7 +37,7 @@ async function getIdClientByName(pool, name, lastname) {
         text: 'SELECT IdClient FROM projet.Client WHERE Prenom =$1 AND  Nom =$2',
         values: [name, lastname]
     };
-    const res = await pool.query(query);
+    let res = await pool.query(query);
     return res.rows.length > 0 ? res.rows[0].idclient : null;
 }
 
@@ -49,8 +49,8 @@ function readTSVFile(filePath) {
                 reject(err);
                 return;
             }
-            const lines = data.split('\n');
-            const tableData = lines.map(line => line.split('\t'));
+            let lines = data.split('\n');
+            let tableData = lines.map(line => line.split('\t'));
             resolve(tableData);
         });
     });

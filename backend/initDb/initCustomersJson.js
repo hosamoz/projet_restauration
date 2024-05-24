@@ -6,11 +6,11 @@ const { hashPwd, generateUniqueId } = require('../utils')
 async function initCustomersJson(pool) {
     try {
         let filePath = path.join(__dirname, 'data', 'customers.json');
-        const data = fs.readFileSync(filePath, 'utf8');
-        const customers = JSON.parse(data);
-        const pwd = hashPwd(process.env.PWD_USER);
+        let data = fs.readFileSync(filePath, 'utf8');
+        let customers = JSON.parse(data);
+        let pwd = hashPwd(process.env.PWD_USER);
 
-        const insertions = customers.map(async (customer) => {
+        let insertions = customers.map(async (customer) => {
             let { firstname, lastname, address } = customer;
             let { street, number, zipcode, city, country } = address;
             if (!firstname.trim() || !lastname.trim())

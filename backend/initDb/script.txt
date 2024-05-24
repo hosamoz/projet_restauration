@@ -114,7 +114,7 @@ CREATE TABLE projet.Note (
 );
 
 CREATE TABLE projet.NotePlat (
-    -- used to retrieve all plats that were noted
+    -- used to retrieve all plats that were noted from the client -> 1 note par client but 1 client = N Plats
     IdRestaurant INT,
     IdClient VARCHAR(255),
     IdPlat INT,

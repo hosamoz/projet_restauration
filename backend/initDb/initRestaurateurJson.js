@@ -10,9 +10,9 @@ async function initRestaurateurJson(pool) {
         let restaurateurs = JSON.parse(data);
         let pwd = hashPwd(process.env.PWD_USER);
 
-        for (const restaurateur of restaurateurs) {
-            const { firstname, lastname, address, restaurant } = restaurateur;
-            const { street, number, zipcode, city, country } = address;
+        for (let restaurateur of restaurateurs) {
+            let { firstname, lastname, address, restaurant } = restaurateur;
+            let { street, number, zipcode, city, country } = address;
             let idClient = generateUniqueId();
             let idRestaurant = await getIdRestaurantByName(pool, restaurant);
 
