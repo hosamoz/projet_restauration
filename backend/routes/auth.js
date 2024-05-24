@@ -1,5 +1,5 @@
 const express = require('express');
-const { hashPwd } = require('../db');
+const { hashPwd } = require('../initDb/db');
 const router = express.Router();
 
 module.exports = (pool) => {

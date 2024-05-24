@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const { Pool } = require('pg');
 const authRoute = require('./routes/auth');
 const clientsRoute = require('./routes/clients');
-const { initDb } = require('./db');
+const { initDb } = require('./initDb/db');
 
 const app = express();
 const port = 3000;

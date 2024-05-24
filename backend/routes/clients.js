@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { hashPwd } = require('../db')
+const { hashPwd } = require('../initDb/db')
 require('dotenv').config();
 
 module.exports = (pool) => {

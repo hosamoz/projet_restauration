@@ -2,32 +2,21 @@ DROP SCHEMA projet CASCADE;
 
 CREATE SCHEMA IF NOT EXISTS projet;
 
-CREATE TABLE projet.clients (name VARCHAR(255), pwd VARCHAR(255));
-
--- INSERT INTO
---     projet.clients (name, pwd)
--- VALUES
---     (
---         'Hosam',
---         'eaf71757471c8f1570c6b2ac7b130099a05a59b98456decf7e3368136c1cdc85'
---     );
-
---CREATE TABLE HORAIRE_RESTO
--- Code TraceAvis
 CREATE TABLE projet.Client (
     IdClient VARCHAR(255) PRIMARY KEY,
     MotDePasse VARCHAR(255) NOT NULL,
     Nom VARCHAR(255) NOT NULL,
     Prenom VARCHAR(255) NOT NULL,
     Rue VARCHAR(255),
-    Numero VARCHAR(10), -- could be 9A,9B,..
+    Numero VARCHAR(10),
+    -- could be 9A,9B,..
     Ville VARCHAR(255),
     CodePostal VARCHAR(20),
     Pays VARCHAR(50),
     Type VARCHAR(20) CHECK (Type IN ('Client', 'Restaurateur', 'Moderateur')) DEFAULT 'Client' NOT NULL,
-    IdRestaurateur VARCHAR(255) UNIQUE, -- This will be populated only if Type is 'Restaurateur'
-    IdModerateur VARCHAR(255) UNIQUE, -- This will be populated only if Type is 'Moderateur'
-    CONSTRAINT unique_client UNIQUE (Nom, Prenom,Rue,Numero,Ville,CodePostal,Pays) -- Since we have no email adress to identify
+    IdModerateur VARCHAR(255) UNIQUE,
+    -- This will be populated only if Type is 'Moderateur'
+    CONSTRAINT unique_client UNIQUE (Nom, Prenom, Rue) -- Since we have no email adress to identify
 );
 
 CREATE TABLE projet.Allergene (
@@ -71,6 +60,15 @@ CREATE TABLE projet.Restaurant (
     Pays VARCHAR(50)
 );
 
+CREATE TABLE projet.Horaire( -- no data on the files given
+    IdHoraire SERIAL PRIMARY KEY,
+    IdRestaurant INT NOT NULL,
+    Jour VARCHAR(20) NOT NULL,
+    HeureOuverture TIME NOT NULL,
+    HeureFermeture TIME NOT NULL,
+    FOREIGN KEY (IdRestaurant) REFERENCES projet.Restaurant(IdRestaurant)
+);
+
 CREATE TABLE projet.Menu (
     IdRestaurant INT,
     IdPlat INT,
@@ -82,11 +80,11 @@ CREATE TABLE projet.Menu (
 CREATE TABLE projet.Note (
     IdRestaurant SERIAL,
     IdClient VARCHAR(255),
-    Commentaire TEXT,
+    Commentaire TEXT NOT NULL,
     ValeurNote DECIMAL(3, 2) CHECK (
         ValeurNote >= 0
         AND ValeurNote <= 5
-    ),
+    ) NOT NULL,
     AvisRecommendation VARCHAR(20) CHECK (
         AvisRecommendation IN (
             'recommandé',
@@ -94,7 +92,7 @@ CREATE TABLE projet.Note (
             'à éviter d''urgence'
         )
     ) NOT NULL,
-    TypeVisite VARCHAR(20) CHECK (TypeVisite IN ('Physique', 'Livraison')) NOT NULL,
+    TypeVisite VARCHAR(20) CHECK (TypeVisite IN ('physique', 'livraison')) NOT NULL,
     AvisPhysique INT CHECK (
         AvisPhysique >= 0
         AND AvisPhysique <= 5
@@ -116,6 +114,7 @@ CREATE TABLE projet.Note (
 );
 
 CREATE TABLE projet.NotePlat (
+    -- used to retrieve all plats that were noted
     IdRestaurant INT,
     IdClient VARCHAR(255),
     IdPlat INT,
@@ -125,9 +124,10 @@ CREATE TABLE projet.NotePlat (
 );
 
 CREATE TABLE projet.TraceAvis (
-    IdRestaurant SERIAL,
+    IdRestaurant INT,
     IdClient VARCHAR(255),
     IdModerateur VARCHAR(255),
+    -- no data on this on the files given this field should be NOT NULL...
     Raison VARCHAR(255),
     Date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (IdRestaurant, IdClient),
