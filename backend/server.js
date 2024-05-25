@@ -6,6 +6,7 @@ const authRoute = require('./routes/auth');
 const clientsRoute = require('./routes/clients');
 const restaurateursRoute = require('./routes/restaurateurs');
 const restaurantsRoute = require('./routes/restaurants');
+const noteRoute = require('./routes/note');
 const { initDb } = require('./initDb/db');
 require('dotenv').config();
 
@@ -42,3 +43,4 @@ app.use('/', authRoute(pool));
 app.use('/clients', clientsRoute(pool));
 app.use('/restaurants', restaurantsRoute(pool));
 app.use('/restaurateurs', restaurateursRoute(pool));
+app.use('/notes', noteRoute(pool));

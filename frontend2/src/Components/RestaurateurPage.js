@@ -1,36 +1,26 @@
 "use strict";
 
 import { RedirectUrl } from "./Router";
-import RestaurantComponent from "./RestaurantComponent";
 import { onError, handleStarRating } from "../utils/common";
+import { getUserSessionData } from "../utils/session";
+import RestaurantComponent from "./RestaurantComponent";
 
-let allRestaurantsArray = []
-
-const RestaurantsPage = async () => {
-
+let myRestaurants = [];
+const RestaurateurPage = async () => {
     document.getElementById('page').innerHTML = `
     <div class="alert alert-danger mt-2 d-none" id="messageBoard"></div>
     <div class="container mt-5">
         <div class="row" id="restaurantGrid"></div>
     </div>
-
    `;
-    await loadRestaurantsGrid().then(() => {
-        let btns = document.querySelectorAll(".btn.btn-primary");
-        btns.forEach(e => e.addEventListener("click", viewRestaurant))
-    })
+    await loadRestaurantsGrid()
 
 };
-const viewRestaurant = (e) => {
-    let idRestaurant = e.target.attributes["id"].value;
-    const actualRestaurant = allRestaurantsArray.find(restaurant => restaurant.idrestaurant = idRestaurant)
 
-    RestaurantComponent(actualRestaurant);
-}
 const loadRestaurantsGrid = async () => {
-    const grid = document.getElementById('restaurantGrid');
-    allRestaurantsArray = await getAllRestaurants();
-    allRestaurantsArray.forEach(restaurant => {
+    let restaurantGrid = document.getElementById("restaurantGrid");
+    myRestaurants = await getMyRestaurants();
+    myRestaurants.forEach(restaurant => {
         // IdRestaurant , IdRestaurateur ,Nom ,Type, GammePrix ,Note, Heures ,Livraison ,Rue ,Numero, Ville, CodePostal, Pays 
         const col = document.createElement('div');
         col.className = 'col-md-4';
@@ -53,20 +43,33 @@ const loadRestaurantsGrid = async () => {
                 </div>
             </div>
         `;
-        grid.appendChild(col);
+        restaurantGrid.appendChild(col);
     });
+
+    let submitButtons = document.querySelectorAll(".btn.btn-primary");
+    submitButtons.forEach(e => e.addEventListener("click", viewRestaurant))
+
 }
 
-const getAllRestaurants = async () => {
+const viewRestaurant = (e) => {
+    let idRestaurant = e.target.attributes["id"].value;
+    const actualRestaurant = myRestaurants.find(restaurant => restaurant.idrestaurant = idRestaurant)
+
+    RestaurantComponent(actualRestaurant);
+}
+
+
+const getMyRestaurants = async () => {
     try {
-        let response = await fetch(process.env.BASE_URL + "/restaurants/", {
+        let idClient = getUserSessionData().idclient
+        let response = await fetch(process.env.BASE_URL + "/restaurateurs/" + idClient, {
             method: "GET", // *GET, POST, PUT, DELETE, etc.
             headers: {
                 "Content-Type": "application/json",
             },
         })
         if (!response.ok) {
-            throw new Error(`getAllRestaurants: ${response.status} - ${response.statusText}`);
+            throw new Error(`getMyRestaurants: ${response.status} - ${response.statusText}`);
         }
         const data = await response.json();
 
@@ -78,4 +81,4 @@ const getAllRestaurants = async () => {
     }
 }
 
-export default RestaurantsPage;
+export default RestaurateurPage;

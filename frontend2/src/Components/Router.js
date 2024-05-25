@@ -1,16 +1,18 @@
 import LoginPage from "./LoginPage";
 import RegisterPage from "./RegisterPage";
 import RestaurantsPage from "./RestaurantsPage";
+import RestaurateurPage from "./RestaurateurPage";
 import LogoutComponent from "./LogoutComponent.js";
 import ErrorPage from "./ErrorPage";
 
 document.getElementById('page').innerText = '';
 const routes = {
-    "/": RestaurantsPage,// LoginPage
+    "/": LoginPage,
     "/login": LoginPage,
     "/register": RegisterPage,
     "/logout": LogoutComponent,
     "/restaurants": RestaurantsPage,
+    "/restaurateur": RestaurateurPage,
 };
 let navBar = document.querySelector("#navBar");
 let componentToRender;

@@ -51,6 +51,26 @@ module.exports = (pool) => {
             res.status(500).json(err.detail);
         }
     });
+    //Get my restaurants
+    router.get('/:idclient', async (req, res) => {
+        let idClient = req.params.idclient;
+
+        try {
+            let query = {
+                text: `
+                    SELECT *
+                    FROM projet.restaurant
+                    WHERE IdRestaurateur = $1 
+                      `,
+                values: [idClient]
+            }
+            const result = await pool.query(query);
+            res.status(200).json(result.rows);
+        } catch (err) {
+            console.error(err);
+            res.status(500).json('Server Error');
+        }
+    });
 
     return router;
 }

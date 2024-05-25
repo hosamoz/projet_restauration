@@ -48,6 +48,25 @@ module.exports = (pool) => {
             res.status(500).json(err.detail);
         }
     });
+    // GET client by id
+    router.get('/:id', async (req, res) => {
+        try {
+            let query = {
+                text: `
+                    SELECT *
+                    FROM projet.client
+                    WHERE idClient = $1 
+                      `,
+                values: [req.params.id]
+            }
+            const result = await pool.query(query);
+            res.json(result.rows[0]);
+        } catch (err) {
+            console.error(err);
+            await pool.query('ROLLBACK');
+            res.status(500).json(err.detail);
+        }
+    });
 
     return router;
 }
