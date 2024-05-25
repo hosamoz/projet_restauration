@@ -1,7 +1,7 @@
 const { v4: uuidv4 } = require('uuid');
 const crypto = require('crypto');
 const fs = require('fs');
-
+const SECRET_KEY = "projetsupersecret"
 
 async function getIdPlatByName(pool, name) {
     if (!name) return null;
@@ -66,11 +66,22 @@ function generateUniqueId() {
     return uuidv4();
 }
 function hashPwd(password) {
-    return crypto.createHmac('sha256', process.env.SECRET_KEY)
+    console.log("dans hashpwd", password)
+    return crypto.createHmac('sha256', SECRET_KEY)
         .update(password)
         .digest('hex');;
 }
+function getAttributeOrEmpty(body, attributeName) {
+    if (body == null) throw new Error('Body cannot be null');
+    if (body[attributeName] == null || isEmpty(body[attributeName])) return "";
+    return body[attributeName].trim();
+}
+function isEmpty(str) {
+    if (str == null) return true;
+    return str.trim().length == 0;
+}
 
 module.exports = {
-    getIdPlatByName, getIdRestaurantByName, getIdClientByName, readTSVFile, parseDateTime, generateUniqueId, hashPwd
+    getIdPlatByName, getIdRestaurantByName, getIdClientByName,
+    readTSVFile, parseDateTime, generateUniqueId, hashPwd, getAttributeOrEmpty, isEmpty
 };

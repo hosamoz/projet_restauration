@@ -1,116 +1,143 @@
 "use strict"
 import { RedirectUrl } from "./Router.js";
 
+const BASE_URL = "http://localhost:3000";
 
 let registerPage = `
-<div class="sidenav">
-         <div class="login-main-text">
-            <h1>Projet BD</h1><br><br>
-            <h2>Register Page</h2>
-            <p> Veuillez vous connecter ou vous inscrire pour acceder a toutes les fonctionnalites du site.</p><br><br><br><br><br><br><br>
+<div class="container mt-5">
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="text-center mb-4">Inscription</h2>
+                <form>
+                    <div class="form-group">
+                        <label>Nom <span class="text-danger">*</span></label>
+                        <input class="form-control" id="nom" type="text" name="nom" placeholder="Entrez votre nom" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Prenom <span class="text-danger">*</span></label>
+                        <input class="form-control" id="prenom" type="text" name="prenom" placeholder="Entrez votre prenom" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Mot de passe <span class="text-danger">*</span></label>
+                        <input class="form-control" id="motDePasse" type="password" name="motDePasse" placeholder="Entrez votre mot de passe" required pattern=".*[A-Z]+.*">
+                    </div>
+                    <div class="form-group">
+                        <label>Rue</label>
+                        <input class="form-control" id="rue" type="text" name="rue" placeholder="Entrez votre rue">
+                    </div>
+                    <div class="form-group">
+                        <label>Numero</label>
+                        <input class="form-control" id="numero" type="text" name="numero" placeholder="Entrez votre numero">
+                    </div>
+                    <div class="form-group">
+                        <label>Ville</label>
+                        <input class="form-control" id="ville" type="text" name="ville" placeholder="Entrez votre ville">
+                    </div>
+                    <div class="form-group">
+                        <label>Code postal</label>
+                        <input class="form-control" id="codePostal" type="text" name="codePostal" placeholder="Entrez votre code postal">
+                    </div>
+                    <div class="form-group">
+                    <label>Pays</label>
+                    <input class="form-control" id="pays" type="text" name="pays" placeholder="Entrez votre pays">
+
+                    <div class="form-group form-check">
+                        <input type="checkbox" class="form-check-input" id="isRestaurateur">
+                        <label class="form-check-label" for="isRestaurateur">Restaurateur?</label>
+                    </div>
+                    <div id="restaurantInfo" class="d-none">  
+                        <div class="form-group">
+                            <label> Nom du restaurant <span class="text-danger">*</span></label>
+                            <input class="form-control" id="nomRestaurant" type="text" name="nomRestaurant" placeholder="Entrez le nom du restaurant" >
+                        </div>
+                    </div>
             
-            
-         </div>
-      </div>
-<div class="main">
-         <div class="col-md-6 col-sm-12">
-<div class="register-form"><form>
-<div class="form-group"><br><br><br><br>
-<label for="firstName">Pseudo</label>
-  <input class="form-control" id="pseudo" type="text" name="pseudo" placeholder="Entrez votre Pseudo " required="" pattern="^([a-zA-Z]|\s)*$"
-  />
+                </div>
+                    <button type="submit" id="register" class="btn btn-success btn-block">Inscription</button>
+                    <div class="alert alert-danger mt-2 d-none" id="messageBoard"></div>
+                </form>
+                <br>
+                <p><u>Vous avez deja un compte?</u></p>
+                <button type="button" id="login" class="btn btn-success btn-block">Connexion</button>
+            </div>
+        </div>
+    </div>
 </div>
- <div class="form-group">
-  <label for="firstName">Prénom</label>
-  <input class="form-control" id="fname" type="text" name="fname" placeholder="Entrez votre Prénom " required="" pattern="^([a-zA-Z]|\s)*$"
-  />
-</div><div class="form-group">
-<label for="Name">Nom</label>
-<input class="form-control" id="name" type="text" name="name" placeholder="Entrez votre Nom" required="" pattern="^([a-zA-Z]|\s)*$"
-/>
-</div>
-<div class="form-group">
-  <label for="email">Email</label>
-  <input class="form-control" id="email" type="text" name="email" placeholder="Entrez  votre email" required="" pattern="^\\w+([.-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,4})+\$" />
-</div>
-<div class="form-group">
-  <label for="password">Mot de passe</label>
-  <input class="form-control" id="password" type="password" name="password" placeholder="Entrez  votre Mot De Passe" required="" pattern=".*[A-Z]+.*" />
-</div>
-<div class="form-group">
-  <label for="confpassword">Confirmez le mot de passe</label>
-  <input class="form-control" id="confpassword" type="password" name="password" placeholder="Confirmez votre Mot De Passe" required="" pattern=".*[A-Z]+.*" />
-</div>
-<button class="btn btn-success" id="btn" type="submit">Submit</button>
-
-<br><br><p><u>Vous avez deja un compte?</u>
-<button type="button" id="login" class="btn btn-success">Login</button></p>
-
-<!-- Create an alert component with bootstrap that is not displayed by default-->
-<div class="alert alert-danger mt-2 d-none" id="messageBoard"></div><span id="errorMessage"></span>
-</form>
-     </div>
-  </div>
-
-  </div>`;
+</div>`;
 
 const RegisterPage = () => {
     let page = document.getElementById("page");
     page.innerHTML = registerPage;
+
     let registerForm = document.querySelector("form");
     registerForm.addEventListener("submit", onRegister);
+
     let loginButton = document.getElementById("login");
     loginButton.addEventListener("click", loginOnClick);
+
+    let checkbox = document.getElementById("isRestaurateur");
+    checkbox.addEventListener("change", onCheckboxRestaurateur);
 };
 
 const loginOnClick = () => {
     RedirectUrl("/login");
 }
-
+const onCheckboxRestaurateur = async (e) => {
+    let restaurantInfo = document.getElementById('restaurantInfo');
+    if (e.target.checked) {
+        restaurantInfo.classList.remove('d-none');
+    } else {
+        restaurantInfo.classList.add('d-none');
+    }
+}
 const onRegister = async (e) => {
     e.preventDefault();
     let user = {
-        pseudo: document.getElementById("pseudo").value,
-        fname: document.getElementById("fname").value,
-        name: document.getElementById("name").value,
-        email: document.getElementById("email").value,
-        password: document.getElementById("password").value,
-        confpassword: document.getElementById("confpassword").value,
-
+        nom: document.getElementById("nom").value,
+        prenom: document.getElementById("prenom").value,
+        motDePasse: document.getElementById("motDePasse").value,
+        rue: document.getElementById("rue").value,
+        numero: document.getElementById("numero").value,
+        ville: document.getElementById("ville").value,
+        codePostal: document.getElementById("codePostal").value,
+        pays: document.getElementById("pays").value,
+        isRestaurateur: document.getElementById('isRestaurateur').checked,
+        nomRestaurant: document.getElementById('nomRestaurant').value,
     };
+    let messageBoard = document.querySelector("#messageBoard");
 
     try {
-        let response = await fetch("/api/users/", {
+        let routeToChoose = user.isRestaurateur ? "/restaurateurs" : "/clients";
+        let response = await fetch(BASE_URL.concat(routeToChoose, "/register"), {
             method: "POST", // *GET, POST, PUT, DELETE, etc.
-            body: JSON.stringify(user), // body data type must match "Content-Type" header
+            body: JSON.stringify(user),
             headers: {
                 "Content-Type": "application/json",
             },
         })
-        console.log(response);
         if (!response.ok)
-            throw new Error(
-                "Error code : " + response.status + " : " + response.statusText);
+            throw new Error(response.status + " : " + response.statusText);
+
         let jsonResponse = await response.json();
-        console.log("Response from JSON", jsonResponse);
-        Navbar(jsonResponse);
-        RedirectUrl("/");
-
+        showGreenNotification("Here is your ID. Use it to login. \n " + jsonResponse);
     } catch (err) {
-        let messageBoard = document.querySelector("#messageBoard");
-        let errorMessage = "";
-        if (err.message.includes("409"))
-            errorMessage = "This user is already registered.";
-
-        else if (err.message.includes("408"))
-            errorMessage = "Confirmation de motDePasse n'est pas correct ";
-        else errorMessage = err.message;
-
-        messageBoard.innerText = errorMessage;
+        console.error(err);
+        messageBoard.innerText = err;
         // show the messageBoard div (add relevant Bootstrap class)
         messageBoard.classList.add("d-block");
-
     }
+}
+
+//utils
+function showGreenNotification(message) {
+    let messageBoard = document.querySelector("#messageBoard");
+
+    messageBoard.innerText = message;
+    messageBoard.classList.remove('d-none');
+    messageBoard.classList.add('alert-success');
+    messageBoard.classList.remove('alert-danger');
 }
 
 export default RegisterPage;

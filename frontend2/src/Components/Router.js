@@ -3,10 +3,9 @@ import RegisterPage from "./RegisterPage";
 import HomePage from "./HomePage";
 import ErrorPage from "./ErrorPage";
 
-console.log("dans router.js")
 document.getElementById('page').innerText = '';
 const routes = {
-    "/": HomePage,
+    "/": LoginPage,
     "/login": LoginPage,
     "/register": RegisterPage,
 };

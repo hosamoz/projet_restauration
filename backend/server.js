@@ -4,7 +4,10 @@ const bodyParser = require('body-parser');
 const { Pool } = require('pg');
 const authRoute = require('./routes/auth');
 const clientsRoute = require('./routes/clients');
+const restaurateursRoute = require('./routes/restaurateurs');
 const { initDb } = require('./initDb/db');
+const { configDotenv } = require('dotenv');
+configDotenv()
 
 const app = express();
 const port = 3000;
@@ -17,7 +20,7 @@ const pool = new Pool({
     port: 5432,
     client_encoding: 'UTF8'
 });
-initDb(pool);
+// initDb(pool);
 
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
@@ -37,3 +40,4 @@ app.use(bodyParser.json());
 // Routes
 app.use('/', authRoute(pool));
 app.use('/clients', clientsRoute(pool));
+app.use('/restaurateurs', restaurateursRoute(pool));

@@ -1,0 +1,88 @@
+Select * from projet.noteplat 
+
+SELECT * FROM projet.Client WHERE nom='Duval' and prenom ='Léonie'
+ SELECT *
+FROM projet.client AS c 
+WHERE c.Nom ='Duval' AND  c.Prenom ='Léonie' AND c.Rue='Rue du Faubourg Saint-Antoine'
+
+SELECT * FROM projet.Client WHERE prenom ='Rose' --2069 clients total
+select * from projet.traceavis
+SELECT * FROM projet.Restaurant WHERE nom ='le palais des saveurs' 
+SELECT * FROM projet.Restaurant WHERE nom ='chez pierre' 
+
+SELECT * 
+FROM projet.restaurant 
+WHERE IdRestaurant=3 --22
+
+ UPDATE projet.Restaurant
+                    SET IdRestaurateur = 'test'
+                    WHERE IdRestaurant = 1
+SELECT c.Nom, c.Prenom,c.Rue,c.Numero,c.Ville,c.CodePostal,c.Pays 
+FROM projet.client AS c 
+
+ SELECT c.idClient,c.nom
+FROM projet.client AS c 
+WHERE c.nom ='Roussel' AND  c.prenom ='Axel' AND c.rue='Rue de Paradis' AND c.numero='127' AND c.ville='7000' AND c.codepostal='Mons' AND c.pays='Belgium'
+
+--Exo 4 - Requetes
+
+--Requete 1
+SELECT *
+FROM projet.restaurant r
+WHERE r.note >= 3
+
+--Requete 2
+SELECT r.Nom  --, p.Nom , p.Prix
+FROM projet.Restaurant r
+JOIN projet.Menu m ON r.IdRestaurant = m.IdRestaurant
+JOIN projet.Plat p ON m.IdPlat = p.IdPlat
+ORDER BY p.Prix DESC
+LIMIT 1;
+
+--Requete 3
+SELECT c.Nom, c.Prenom, COUNT(np.IdPlat) AS NombreDePlatsMexicains
+FROM projet.Client c
+JOIN projet.Note n ON c.IdClient = n.IdClient
+JOIN projet.NotePlat np ON n.IdClient = np.IdClient AND n.IdRestaurant = np.IdRestaurant
+JOIN projet.Plat p ON np.IdPlat = p.IdPlat
+JOIN projet.Menu m ON p.IdPlat = m.IdPlat
+JOIN projet.Restaurant r ON m.IdRestaurant = r.IdRestaurant
+WHERE r.Type = 'mexicain'
+GROUP BY c.Nom, c.Prenom
+ORDER BY NombreDePlatsMexicains DESC
+LIMIT 10;
+
+--Requete 4 +-?
+SELECT r1.Nom, COUNT(m1.IdPlat) AS NbrPlatsAsiat
+FROM projet.Restaurant r1
+JOIN projet.Menu m1 ON r1.IdRestaurant = m1.IdRestaurant
+WHERE 
+    r1.Type != 'asiatique'
+    AND m1.IdPlat IN (
+        SELECT m2.IdPlat
+        FROM projet.Menu m2
+        JOIN projet.Restaurant r2 ON m2.IdRestaurant = r2.IdRestaurant
+        WHERE r2.Type = 'asiatique'
+        GROUP BY m2.IdPlat
+    )
+GROUP BY r1.IdRestaurant, r1.Nom
+ORDER BY NbrPlatsAsiat DESC
+LIMIT 1;
+
+
+--Requete 5
+SELECT CodePostal
+FROM projet.Restaurant 
+WHERE Ville = (
+        SELECT Ville
+        FROM( SELECT Ville,AVG(Note) AS NoteMoyenne
+                FROM projet.Restaurant
+                GROUP BY Ville
+                ORDER BY NoteMoyenne ASC
+                LIMIT 1
+            ) AS VilleMoinsBienNote
+    )
+LIMIT 1;
+
+-- Requete 6
+
