@@ -1,6 +1,7 @@
 
 import { RedirectUrl } from "./Router";
-const BASE_URL = "http://localhost:3000";
+import { setUserSessionData } from "../utils/session";
+import Navbar from "./Navbar";
 
 let loginPage = `
 <div class="container mt-5">
@@ -44,13 +45,13 @@ const LoginPage = () => {
 
     })
 };
-const onLogin = (e) => {
+const onLogin = async (e) => {
     e.preventDefault();
     let user = {
         idClient: document.getElementById("idClient").value,
         motDePasse: document.getElementById("motDePasse").value,
     };
-    fetch(BASE_URL + "/login", {
+    await fetch(process.env.BASE_URL + "/login", {
         method: "POST", // *GET, POST, PUT, DELETE, etc.
         body: JSON.stringify(user),
         headers: {
@@ -70,7 +71,9 @@ const onLogin = (e) => {
 
 const onUserLogin = (userData) => {
     console.log("onUserLogin:", userData);
-    RedirectUrl("/");
+    setUserSessionData(userData.user);
+    Navbar();
+    RedirectUrl("/restaurants");
 };
 
 const onError = (err) => {

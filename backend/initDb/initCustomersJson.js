@@ -24,7 +24,6 @@ async function initCustomersJson(pool) {
                 values: [generateUniqueId(), pwd, lastname, firstname, street, number, zipcode, city, country],
             };
 
-
             try {
                 let result = await pool.query(query);
                 return result.rows[0]; // Returns the inserted IdClient

@@ -7,7 +7,7 @@ module.exports = (pool) => {
     // Register 
     router.post('/register', async (req, res) => {
         const data = req.body;
-        console.log(data)
+        // console.log(data)
         let nom = getAttributeOrEmpty(data, "nom");
         let prenom = getAttributeOrEmpty(data, "prenom");
         let motDePasse = getAttributeOrEmpty(data, "motDePasse");
@@ -44,8 +44,7 @@ module.exports = (pool) => {
                 values: [result.rows[0].idclient, nomRestaurant.toLowerCase()]
             }
             await pool.query(queryRestaurant);
-
-            res.status(200).json(queryClient.rows[0].idclient);
+            res.status(200).json(result.rows[0].idclient);
         } catch (err) {
             console.error(err);
             await pool.query('ROLLBACK');

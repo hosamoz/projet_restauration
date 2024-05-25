@@ -51,7 +51,6 @@ CREATE TABLE projet.Restaurant (
         Note >= 0
         AND Note <= 5
     ),
-    Heures VARCHAR(255),
     Livraison BOOLEAN,
     Rue VARCHAR(255),
     Numero VARCHAR(10),

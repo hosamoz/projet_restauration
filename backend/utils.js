@@ -1,7 +1,6 @@
 const { v4: uuidv4 } = require('uuid');
 const crypto = require('crypto');
 const fs = require('fs');
-const SECRET_KEY = "projetsupersecret"
 
 async function getIdPlatByName(pool, name) {
     if (!name) return null;
@@ -66,8 +65,7 @@ function generateUniqueId() {
     return uuidv4();
 }
 function hashPwd(password) {
-    console.log("dans hashpwd", password)
-    return crypto.createHmac('sha256', SECRET_KEY)
+    return crypto.createHmac('sha256', process.env.SECRET_KEY)
         .update(password)
         .digest('hex');;
 }

@@ -1,8 +1,6 @@
 "use strict"
 import { RedirectUrl } from "./Router.js";
 
-const BASE_URL = "http://localhost:3000";
-
 let registerPage = `
 <div class="container mt-5">
 <div class="row justify-content-center">
@@ -106,29 +104,35 @@ const onRegister = async (e) => {
         isRestaurateur: document.getElementById('isRestaurateur').checked,
         nomRestaurant: document.getElementById('nomRestaurant').value,
     };
-    let messageBoard = document.querySelector("#messageBoard");
-
-    try {
-        let routeToChoose = user.isRestaurateur ? "/restaurateurs" : "/clients";
-        let response = await fetch(BASE_URL.concat(routeToChoose, "/register"), {
-            method: "POST", // *GET, POST, PUT, DELETE, etc.
-            body: JSON.stringify(user),
-            headers: {
-                "Content-Type": "application/json",
-            },
-        })
+    let routeToChoose = user.isRestaurateur ? "/restaurateurs" : "/clients";
+    let response = await fetch(process.env.BASE_URL.concat(routeToChoose, "/register"), {
+        method: "POST", // *GET, POST, PUT, DELETE, etc.
+        body: JSON.stringify(user),
+        headers: {
+            "Content-Type": "application/json",
+        },
+    }).then((response) => {
         if (!response.ok)
-            throw new Error(response.status + " : " + response.statusText);
-
-        let jsonResponse = await response.json();
-        showGreenNotification("Here is your ID. Use it to login. \n " + jsonResponse);
-    } catch (err) {
-        console.error(err);
-        messageBoard.innerText = err;
-        // show the messageBoard div (add relevant Bootstrap class)
-        messageBoard.classList.add("d-block");
-    }
+            throw new Error(
+                "Error code : " + response.status + " : " + response.statusText
+            );
+        return response.json();
+    })
+        .then((data) => onUserRegister(data))
+        .catch((err) => onError(err));
 }
+const onUserRegister = (userData) => {
+    console.log("onUserRegister:", userData);
+    showGreenNotification("This is your id save it to login: \n" + userData)
+};
+
+const onError = (err) => {
+    console.error("error dans le onError", err);
+    let messageBoard = document.querySelector("#messageBoard");
+    let errorMessage = err.message;
+    messageBoard.innerText = errorMessage;
+    messageBoard.classList.add("d-block");
+};
 
 //utils
 function showGreenNotification(message) {

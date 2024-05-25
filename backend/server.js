@@ -5,9 +5,9 @@ const { Pool } = require('pg');
 const authRoute = require('./routes/auth');
 const clientsRoute = require('./routes/clients');
 const restaurateursRoute = require('./routes/restaurateurs');
+const restaurantsRoute = require('./routes/restaurants');
 const { initDb } = require('./initDb/db');
-const { configDotenv } = require('dotenv');
-configDotenv()
+require('dotenv').config();
 
 const app = express();
 const port = 3000;
@@ -40,4 +40,5 @@ app.use(bodyParser.json());
 // Routes
 app.use('/', authRoute(pool));
 app.use('/clients', clientsRoute(pool));
+app.use('/restaurants', restaurantsRoute(pool));
 app.use('/restaurateurs', restaurateursRoute(pool));
